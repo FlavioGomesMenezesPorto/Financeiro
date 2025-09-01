@@ -1,0 +1,124 @@
+{% extends "core/base.html" %}
+
+{% block title %}Dashboard - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Dashboard</h1>
+    <div class="d-flex gap-2">
+        <a href="{% url 'add_transaction' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Adicionar Transação
+        </a>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-gear me-1"></i>
+                Adicionar Outros
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" href="{% url 'add_account' %}">Nova Conta</a></li>
+                <li><a class="dropdown-item" href="{% url 'add_category' %}">Nova Categoria</a></li>
+                <li><a class="dropdown-item" href="{% url 'add_saving_goal' %}">Nova Meta de Economia</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Coluna Principal -->
+    <div class="col-lg-8">
+        <!-- Visão Geral de Contas -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-wallet2 me-2"></i>Visão Geral de Contas</h5>
+            </div>
+            <div class="card-body">
+                {% for account in accounts %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>{{ account.name }}</span>
+                        <strong>R$ {{ account.balance|floatformat:2 }}</strong>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Nenhuma conta cadastrada. <a href="{% url 'add_account' %}">Adicionar uma conta</a>.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Histórico de Transações -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-card-list me-2"></i>Histórico de Transações</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Valor (R$)</th>
+                                <th>Categoria</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                                <tr>
+                                    <td>{{ transaction.description }}</td>
+                                    <td class="{% if transaction.amount < 0 %}text-danger{% else %}text-success{% endif %}">{{ transaction.amount|floatformat:2 }}</td>
+                                    <td><span class="badge bg-secondary">{{ transaction.category.name|default:"N/A" }}</span></td>
+                                    <td>{{ transaction.date|date:"d/m/Y" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">Nenhuma transação recente.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coluna Lateral -->
+    <div class="col-lg-4">
+        <!-- Metas de Economia -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-bullseye me-2"></i>Metas de Economia</h5>
+            </div>
+            <div class="card-body">
+                {% for goal in saving_goals %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ goal.name }}</span>
+                            <span>{{ goal.current_amount|floatformat:2 }} / {{ goal.target_amount|floatformat:2 }}</span>
+                        </div>
+                        <div class="progress mt-1" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ goal.progress_percentage }}%;" aria-valuenow="{{ goal.progress_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ goal.progress_percentage|floatformat:0 }}%</div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">Nenhuma meta cadastrada. <a href="{% url 'add_saving_goal' %}">Adicionar uma meta</a>.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Categorias de Gastos -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Categorias de Gastos</h5>
+            </div>
+            <div class="card-body">
+                <!-- Placeholder para gráfico de categorias -->
+                <p class="text-muted">Gráfico de categorias em breve.</p>
+                {% for category in categories %}
+                    <span class="badge bg-primary me-1 mb-1">{{ category.name }}</span>
+                {% empty %}
+                    <p class="text-muted">Nenhuma categoria cadastrada. <a href="{% url 'add_category' %}">Adicionar uma categoria</a>.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
