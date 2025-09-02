@@ -46,7 +46,10 @@
                             <a class="nav-link" href="{% url 'add_saving_goal' %}">Metas</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+                            <form action="{% url 'logout' %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn nav-link" style="border: none; background: none;">Logout ({{ user.username }})</button>
+                            </form>
                         </li>
                     {% else %}
                         <li class="nav-item">
