@@ -1,4 +1,7 @@
 {% extends "admin/base_site.html" %}
 {% block content %}
-<meta http-equiv="refresh" content="0; url={% url 'login' %}">
+<p>Você saiu. Redirecionando para a página de login...</p>
+<script>
+  window.location.href = "{% url 'login' %}";
+</script>
 {% endblock %}
