@@ -110,15 +110,65 @@
                 <h5 class="card-title mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Categorias de Gastos</h5>
             </div>
             <div class="card-body">
-                <!-- Placeholder para gráfico de categorias -->
-                <p class="text-muted">Gráfico de categorias em breve.</p>
-                {% for category in categories %}
-                    <span class="badge bg-primary me-1 mb-1">{{ category.name }}</span>
-                {% empty %}
-                    <p class="text-muted">Nenhuma categoria cadastrada. <a href="{% url 'add_category' %}">Adicionar uma categoria</a>.</p>
-                {% endfor %}
+                {% if chart_labels and chart_data %}
+                    <canvas id="categorySpendingChart"></canvas>
+                {% else %}
+                    <p class="text-muted">Não há dados de despesas para exibir no gráfico.</p>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('categorySpendingChart');
+        if (ctx) {
+            const chartLabels = JSON.parse('{{ chart_labels|safe }}');
+            const chartData = JSON.parse('{{ chart_data|safe }}');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Gastos por Categoria',
+                        data: chartData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

@@ -3,6 +3,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .models import Account, Category, Transaction, SavingGoal
 from .forms import AccountForm, CategoryForm, TransactionForm, SavingGoalForm
+from django.db.models import Sum
+import json
+from decimal import Decimal
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        return super(DecimalEncoder, self).default(obj)
 
 @login_required
 def dashboard(request):
@@ -11,11 +20,22 @@ def dashboard(request):
     transactions = Transaction.objects.filter(user=request.user)
     saving_goals = SavingGoal.objects.filter(user=request.user)
 
+    # Chart data
+    category_spending = Transaction.objects.filter(
+        user=request.user,
+        transaction_type='OUT'
+    ).values('category__name').annotate(total_spent=Sum('amount')).order_by('-total_spent')
+
+    chart_labels = [item['category__name'] if item['category__name'] else 'Sem Categoria' for item in category_spending]
+    chart_data = [item['total_spent'] for item in category_spending]
+
     context = {
         'accounts': accounts,
         'categories': categories,
         'transactions': transactions,
         'saving_goals': saving_goals,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data, cls=DecimalEncoder),
     }
 
     return render(request, 'core/dashboard.html', context)
