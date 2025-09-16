@@ -110,11 +110,22 @@
                 <h5 class="card-title mb-0"><i class="bi bi-pie-chart-fill me-2"></i>Categorias de Gastos</h5>
             </div>
             <div class="card-body">
-                {% if chart_labels and chart_data %}
+                {% if chart_labels and chart_data and chart_data != '[]' %}
                     <canvas id="categorySpendingChart"></canvas>
                 {% else %}
                     <p class="text-muted">Não há dados de despesas para exibir no gráfico.</p>
                 {% endif %}
+
+                <hr>
+
+                <h6 class="card-subtitle mb-2 text-muted">Todas as Categorias</h6>
+                <div>
+                {% for category in categories %}
+                    <span class="badge bg-secondary me-1 mb-1">{{ category.name }}</span>
+                {% empty %}
+                    <p class="text-muted small">Nenhuma categoria cadastrada. <a href="{% url 'add_category' %}">Adicionar uma categoria</a>.</p>
+                {% endfor %}
+                </div>
             </div>
         </div>
     </div>

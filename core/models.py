@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 # Modelo para o perfil do usuario
 class Profile(models.Model):
@@ -29,14 +31,18 @@ class Category(models.Model):
 
 class Transaction(models.Model):
     TRANSACTION_TYPE_CHOICES = [
-        ('IN', 'Income'),
-        ('OUT', 'Outcome'),
+        ('IN', 'Entrada'),
+        ('OUT', 'Saída'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal('0.01'))]
+    )
     transaction_type = models.CharField(max_length=3, choices=TRANSACTION_TYPE_CHOICES)
     date = models.DateField()
     description = models.CharField(max_length=255)

@@ -15,6 +15,9 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ['account', 'category', 'amount', 'transaction_type', 'date', 'description']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 class SavingGoalForm(forms.ModelForm):
     class Meta:
