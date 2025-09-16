@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 import dj_database_url
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,11 +90,11 @@ WSGI_APPLICATION = 'financeiro.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'financeiro_0gfk',
-        'USER': 'financeiro_0gfk_user',
-        'PASSWORD': '3mJTDVcv3h66f1Pmo8r3DEeR57wX1ma4',
-        'HOST': 'dpg-d34nh7re5dus739phtfg-a.oregon-postgres.render.com',
-        'PORT': '5432',
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
@@ -138,3 +144,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+

@@ -6,6 +6,8 @@ from .forms import AccountForm, CategoryForm, TransactionForm, SavingGoalForm
 from django.db.models import Sum
 import json
 from decimal import Decimal
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -103,3 +105,10 @@ def add_saving_goal(request):
     else:
         form = SavingGoalForm()
     return render(request, 'core/add_saving_goal.html', {'form': form})
+
+@csrf_exempt
+def minha_view(request):
+    if request.method == 'POST':
+        # Sua lógica de processamento aqui
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'error': 'Método não permitido'}, status=405)
